@@ -1,10 +1,11 @@
 import string
+from collections import OrderedDict
 
 alphabet = string.ascii_lowercase
 removed_letter = "y"
 key = "boa tarde"
-key = "".join(set(key)) #remove duplicates
-key = key.replace(' ', '') #remove whitespace
+key = key.replace(' ', '').strip() #remove whitespace
+key = list(OrderedDict.fromkeys(key))
 
 keyMatrix = [[0 for x in range(5)] for y in range(5)]
 already_in = set()
