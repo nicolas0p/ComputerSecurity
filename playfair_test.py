@@ -21,6 +21,22 @@ class playfairTest(unittest.TestCase):
 
         self.assertEqual(correct, keyMatrix)
 
+        keyMatrixEmpty = playfair._generate_key_matrix("")
+        defaultKey = [['a', 'b', 'c', 'd', 'e'],
+                ['f', 'g', 'h', 'i', 'j'],
+                ['k', 'l', 'm', 'n', 'o'],
+                ['p', 'q', 'r', 's', 't'],
+                ['u', 'v', 'w', 'x', 'z']]
+
+        self.assertEqual(defaultKey, keyMatrixEmpty)
+
+        keyMatrixLonger = playfair._generate_key_matrix("abcdefghijklmnopqrstuvwxyzs")
+        self.assertEqual(defaultKey, keyMatrixLonger)
+
+        keyMatrixWithRemovedLetter = playfair._generate_key_matrix("abcyd")
+        self.assertEqual(defaultKey, keyMatrixWithRemovedLetter)
+
+
     def test_find_next_pair(self):
         text = "yayyyybyyyy"
         result = playfair._find_next_pair(text, 0)
@@ -60,6 +76,10 @@ class playfairTest(unittest.TestCase):
         keyMatrix = playfair._generate_key_matrix("boa tarde")
 
         self.assertEqual("ribypvmeb", playfair.encrypt(" olay mundo  ", keyMatrix))
+        pdb.set_trace()
+        self.assertEqual("vneajrmslw", playfair.encrypt("nicolasqj", keyMatrix))
+
+        self.assertEqual("yehtyobny", playfair.encrypt("ydiaybomy", keyMatrix))
 
 if __name__ == '__main__':
     unittest.main()

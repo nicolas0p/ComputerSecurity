@@ -7,6 +7,7 @@ removed_letter = 'y'
 def _generate_key_matrix(key):
     alphabet = string.ascii_lowercase
     key = key.replace(' ', '').strip() #remove whitespace
+    key = key.replace(removed_letter, '')
     key = list(OrderedDict.fromkeys(key))
 
     keyMatrix = [[0 for x in range(5)] for y in range(5)]
@@ -33,7 +34,6 @@ def _position_in_matrix(character, keyMatrix):
             return position
     return False
 
-
 def _find_next_pair(text, leftPosition, rightPosition = 0):
     if rightPosition == 0:
         rightPosition = leftPosition + 1
@@ -55,13 +55,13 @@ def _encrypt_pair(pair, keyMatrix):
     right_char_position = _position_in_matrix(pair[1], keyMatrix)
     if left_char_position.x == right_char_position.x:
         #same row get char to the right
-        left = keyMatrix[left_char_position.x][left_char_position.y + 1 % len(keyMatrix)]
-        right = keyMatrix[right_char_position.x][right_char_position.y + 1 % len(keyMatrix)]
+        left = keyMatrix[left_char_position.x][(left_char_position.y + 1) % len(keyMatrix)]
+        right = keyMatrix[right_char_position.x][(right_char_position.y + 1) % len(keyMatrix)]
         return left + right
     if left_char_position.y == right_char_position.y:
         #same column get char below
-        left = keyMatrix[left_char_position.x + 1 % len(keyMatrix)][left_char_position.y]
-        right = keyMatrix[right_char_position.x + 1 % len(keyMatrix)][right_char_position.y]
+        left = keyMatrix[(left_char_position.x + 1) % len(keyMatrix)][left_char_position.y]
+        right = keyMatrix[(right_char_position.x + 1) % len(keyMatrix)][right_char_position.y]
         return left + right
     left = keyMatrix[left_char_position.x][right_char_position.y]
     right = keyMatrix[right_char_position.x][left_char_position.y]
@@ -71,7 +71,7 @@ def encrypt(plaintext, keyMatrix):
     plaintext = plaintext.replace(' ', '').strip()
     cyphertext = ""
     i = 0
-    while i < len(plaintext) - 1:
+    while i < len(plaintext):
         char_left, char_right, left, right = _find_next_pair(plaintext, i)
         cypherpair = _encrypt_pair(char_left + char_right, keyMatrix)
         removed = removed_letter * (right - left - 1)
@@ -79,5 +79,11 @@ def encrypt(plaintext, keyMatrix):
         i = right + 1
     return cyphertext
 
-def decrypt(cyphertext, keyMatrix):
-    pass
+if __name__ == "__main__":
+    key = str(input("Type in the key you want to use with the playfair algorightm:"))
+    print(key)
+    plaintext = str(input("Type in the plaintext you want to cypher:"))
+    print(plaintext)
+    keyMatrix = _generate_key_matrix(key)
+    cyphertext = encrypt(plaintext, keyMatrix)
+    print("Cyphertext = '{}'".format(cyphertext))
