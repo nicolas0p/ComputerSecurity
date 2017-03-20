@@ -67,8 +67,26 @@ def _encrypt_pair(pair, keyMatrix):
     right = keyMatrix[right_char_position.x][left_char_position.y]
     return left + right
 
+def _preceding_removed(plaintext):
+    i = 0
+    for i in range(len(plaintext)):
+        if plaintext[i] is not removed_letter:
+            return plaintext[i:], removed_letter * i
+    return "", plaintext
+
+def _following_removed(plaintext):
+    i = len(plaintext) - 1
+    for i in range(len(plaintext)-1, -1, -1):
+        if plaintext[i] is not removed_letter:
+            return plaintext[:i+1], removed_letter * (len(plaintext) - i - 1)
+    return "", plaintext
+
 def encrypt(plaintext, keyMatrix):
     plaintext = plaintext.replace(' ', '').strip()
+    if len(plaintext.replace(removed_letter, '')) % 2 == 1:
+        plaintext += 'z'
+    plaintext, preceding = _preceding_removed(plaintext)
+    plaintext, following = _following_removed(plaintext)
     cyphertext = ""
     i = 0
     while i < len(plaintext):
@@ -77,7 +95,7 @@ def encrypt(plaintext, keyMatrix):
         removed = removed_letter * (right - left - 1)
         cyphertext += cypherpair[0] + removed + cypherpair[1]
         i = right + 1
-    return cyphertext
+    return preceding + cyphertext + following
 
 if __name__ == "__main__":
     key = str(input("Type in the key you want to use with the playfair algorightm:"))

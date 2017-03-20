@@ -74,12 +74,12 @@ class playfairTest(unittest.TestCase):
 
     def test_encrypt(self):
         keyMatrix = playfair._generate_key_matrix("boa tarde")
-
         self.assertEqual("ribypvmeb", playfair.encrypt(" olay mundo  ", keyMatrix))
-        pdb.set_trace()
         self.assertEqual("vneajrmslw", playfair.encrypt("nicolasqj", keyMatrix))
-
-        self.assertEqual("yehtyobny", playfair.encrypt("ydiaybomy", keyMatrix))
+        self.assertEqual("yyyehtyobn", playfair.encrypt("yyydiaybom", keyMatrix))
+        self.assertEqual("yehtyobnyyy", playfair.encrypt("ydiaybomyyy", keyMatrix))
+        self.assertEqual("yyyyyyy", playfair.encrypt("yyyyyyy", keyMatrix))
+        self.assertEqual("yryyw", playfair.encrypt("yayy", keyMatrix))
 
 if __name__ == '__main__':
     unittest.main()
