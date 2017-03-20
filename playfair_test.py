@@ -10,7 +10,7 @@ class playfairTest(unittest.TestCase):
         pass
 
     def test_generate_key_matrix(self):
-        key = "    boa tarde   "
+        key = "    bo,a tarde !  "
         keyMatrix = playfair._generate_key_matrix(key)
 
         correct = [['b', 'o', 'a', 't', 'r'],
@@ -76,6 +76,7 @@ class playfairTest(unittest.TestCase):
         keyMatrix = playfair._generate_key_matrix("boa tarde")
         self.assertEqual("ribypvmeb", playfair.encrypt(" olay mundo  ", keyMatrix))
         self.assertEqual("vneajrmslw", playfair.encrypt("nicolasqj", keyMatrix))
+        self.assertEqual("vneajrzr", playfair.encrypt("Nicolas", keyMatrix))
         self.assertEqual("yyyehtyobn", playfair.encrypt("yyydiaybom", keyMatrix))
         self.assertEqual("yehtyobnyyy", playfair.encrypt("ydiaybomyyy", keyMatrix))
         self.assertEqual("yyyyyyy", playfair.encrypt("yyyyyyy", keyMatrix))

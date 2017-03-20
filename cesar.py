@@ -28,3 +28,4 @@ if __name__ == "__main__":
     plaintext = str(input("Type in the plaintext you want to cypher:"))
     print(plaintext)
     cyphertext = encrypt(plaintext, key)
+    print(cyphertext)

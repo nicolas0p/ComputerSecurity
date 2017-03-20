@@ -100,6 +100,7 @@ def _following_removed(plaintext):
 
 def encrypt(plaintext, keyMatrix):
     plaintext = plaintext.replace(' ', '').strip()
+    plaintext = plaintext.lower()
     if len(plaintext.replace(removed_letter, '')) % 2 == 1:
         plaintext += 'z'
     plaintext, preceding = _preceding_removed(plaintext)
@@ -116,6 +117,7 @@ def encrypt(plaintext, keyMatrix):
 
 def decrypt(cyphertext, keyMatrix):
     cyphertext = cyphertext.replace(' ', '').strip()
+    cyphertext = cyphertext.lower()
     cyphertext, preceding = _preceding_removed(cyphertext)
     cyphertext, following = _following_removed(cyphertext)
     plaintext = ""
