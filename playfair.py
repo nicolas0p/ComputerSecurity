@@ -67,6 +67,23 @@ def _encrypt_pair(pair, keyMatrix):
     right = keyMatrix[right_char_position.x][left_char_position.y]
     return left + right
 
+def _decrypt_pair(pair, keyMatrix):
+    left_char_position = _position_in_matrix(pair[0], keyMatrix)
+    right_char_position = _position_in_matrix(pair[1], keyMatrix)
+    if left_char_position.x == right_char_position.x:
+        #same row get char to the left
+        left = keyMatrix[left_char_position.x][(left_char_position.y - 1) % len(keyMatrix)]
+        right = keyMatrix[right_char_position.x][(right_char_position.y - 1) % len(keyMatrix)]
+        return left + right
+    if left_char_position.y == right_char_position.y:
+        #same column get char above
+        left = keyMatrix[(left_char_position.x - 1) % len(keyMatrix)][left_char_position.y]
+        right = keyMatrix[(right_char_position.x - 1) % len(keyMatrix)][right_char_position.y]
+        return left + right
+    left = keyMatrix[left_char_position.x][right_char_position.y]
+    right = keyMatrix[right_char_position.x][left_char_position.y]
+    return left + right
+
 def _preceding_removed(plaintext):
     i = 0
     for i in range(len(plaintext)):
@@ -96,6 +113,20 @@ def encrypt(plaintext, keyMatrix):
         cyphertext += cypherpair[0] + removed + cypherpair[1]
         i = right + 1
     return preceding + cyphertext + following
+
+def decrypt(cyphertext, keyMatrix):
+    cyphertext = cyphertext.replace(' ', '').strip()
+    cyphertext, preceding = _preceding_removed(cyphertext)
+    cyphertext, following = _following_removed(cyphertext)
+    plaintext = ""
+    i = 0
+    while i < len(cyphertext):
+        char_left, char_right, left, right = _find_next_pair(cyphertext, i)
+        plainpair = _decrypt_pair(char_left + char_right, keyMatrix)
+        removed = removed_letter * (right - left - 1)
+        plaintext += plainpair[0] + removed + plainpair[1]
+        i = right + 1
+    return preceding + plaintext + following
 
 if __name__ == "__main__":
     key = str(input("Type in the key you want to use with the playfair algorightm:"))

@@ -81,5 +81,15 @@ class playfairTest(unittest.TestCase):
         self.assertEqual("yyyyyyy", playfair.encrypt("yyyyyyy", keyMatrix))
         self.assertEqual("yryyw", playfair.encrypt("yayy", keyMatrix))
 
+    def test_decrypt(self):
+        keyMatrix = playfair._generate_key_matrix("boa tarde")
+
+        self.assertEqual("olaymundo", playfair.decrypt("ribypvmeb", keyMatrix))
+        self.assertEqual("nicolasqjz", playfair.decrypt("vneajrmslw", keyMatrix))
+        self.assertEqual("yyydiaybom", playfair.decrypt("yyyehtyobn", keyMatrix))
+        self.assertEqual("ydiaybomyyy", playfair.decrypt("yehtyobnyyy", keyMatrix))
+        self.assertEqual("yyyyyyy", playfair.decrypt("yyyyyyy", keyMatrix))
+        self.assertEqual("yayyz", playfair.decrypt("yryyw", keyMatrix))
+
 if __name__ == '__main__':
     unittest.main()
