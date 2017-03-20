@@ -3,11 +3,12 @@ from collections import OrderedDict
 from collections import namedtuple
 
 removed_letter = 'y'
+alphabet = string.ascii_lowercase.replace(removed_letter, '')
 
 def _generate_key_matrix(key):
-    alphabet = string.ascii_lowercase
     key = key.replace(' ', '').strip() #remove whitespace
     key = key.replace(removed_letter, '')
+    key = [x for x in key if x in alphabet]
     key = list(OrderedDict.fromkeys(key))
 
     keyMatrix = [[0 for x in range(5)] for y in range(5)]
@@ -16,8 +17,7 @@ def _generate_key_matrix(key):
         keyMatrix[len(already_in) // 5][len(already_in) % 5] = char
         already_in.add(char)
 
-    remaining = len(alphabet) - 1 - len(already_in)
-    alphabet = alphabet.replace(removed_letter, "")
+    remaining = len(alphabet) - len(already_in)
     for char in list(alphabet):
         for i in range(remaining):
             if char not in already_in:
@@ -44,9 +44,9 @@ def _find_next_pair(text, leftPosition, rightPosition = 0):
     """
     if rightPosition == len(text):
         text += "z"
-    if text[leftPosition] == removed_letter:
+    if text[leftPosition] not in alphabet:
         return _find_next_pair(text, leftPosition + 1)
-    if text[rightPosition] == removed_letter:
+    if text[rightPosition] not in alphabet:
         return _find_next_pair(text, leftPosition, rightPosition + 1)
     return text[leftPosition], text[rightPosition], leftPosition, rightPosition
 
@@ -84,14 +84,15 @@ def _decrypt_pair(pair, keyMatrix):
     right = keyMatrix[right_char_position.x][left_char_position.y]
     return left + right
 
-def _preceding_removed(plaintext):
+"""Ignored characters are the removed character plus special characters"""
+def _preceding_ignored(plaintext):
     i = 0
     for i in range(len(plaintext)):
-        if plaintext[i] is not removed_letter:
+        if plaintext[i] in alphabet:
             return plaintext[i:], removed_letter * i
     return "", plaintext
 
-def _following_removed(plaintext):
+def _following_ignored(plaintext):
     i = len(plaintext) - 1
     for i in range(len(plaintext)-1, -1, -1):
         if plaintext[i] is not removed_letter:
@@ -99,35 +100,39 @@ def _following_removed(plaintext):
     return "", plaintext
 
 def encrypt(plaintext, keyMatrix):
-    plaintext = plaintext.replace(' ', '').strip()
-    plaintext = plaintext.lower()
-    if len(plaintext.replace(removed_letter, '')) % 2 == 1:
+    plaintext = plaintext.replace(' ', '').lower()
+    if len([x for x in plaintext if x in alphabet]) % 2 == 1:
         plaintext += 'z'
-    plaintext, preceding = _preceding_removed(plaintext)
-    plaintext, following = _following_removed(plaintext)
+    plaintext, preceding = _preceding_ignored(plaintext)
+    plaintext, following = _following_ignored(plaintext)
     cyphertext = ""
     i = 0
+    last_right = 0
     while i < len(plaintext):
         char_left, char_right, left, right = _find_next_pair(plaintext, i)
         cypherpair = _encrypt_pair(char_left + char_right, keyMatrix)
-        removed = removed_letter * (right - left - 1)
-        cyphertext += cypherpair[0] + removed + cypherpair[1]
+        removed = plaintext[left+1:right]
+        between_pairs = plaintext[last_right+1:left]
+        cyphertext += between_pairs + cypherpair[0] + removed + cypherpair[1]
         i = right + 1
+        last_right = right
     return preceding + cyphertext + following
 
 def decrypt(cyphertext, keyMatrix):
-    cyphertext = cyphertext.replace(' ', '').strip()
-    cyphertext = cyphertext.lower()
-    cyphertext, preceding = _preceding_removed(cyphertext)
-    cyphertext, following = _following_removed(cyphertext)
+    cyphertext = cyphertext.replace(' ', '').lower()
+    cyphertext, preceding = _preceding_ignored(cyphertext)
+    cyphertext, following = _following_ignored(cyphertext)
     plaintext = ""
     i = 0
+    last_right = 0
     while i < len(cyphertext):
         char_left, char_right, left, right = _find_next_pair(cyphertext, i)
         plainpair = _decrypt_pair(char_left + char_right, keyMatrix)
-        removed = removed_letter * (right - left - 1)
-        plaintext += plainpair[0] + removed + plainpair[1]
+        removed = cyphertext[left+1:right]
+        between_pairs = cyphertext[last_right+1:left]
+        plaintext += between_pairs + plainpair[0] + removed + plainpair[1]
         i = right + 1
+        last_right = right
     return preceding + plaintext + following
 
 if __name__ == "__main__":
