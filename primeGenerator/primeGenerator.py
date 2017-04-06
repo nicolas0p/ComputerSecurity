@@ -9,7 +9,7 @@ def park_miller(old_seed):
     return (old_seed * park_miller_g) % park_miller_n
 
 lcg_a = 6364136223846793005
-lcg_c = pow(2,31)-1
+lcg_c = 1442695040888963407
 def linear_congruential_generator(seed, m):
     return (lcg_a * seed + lcg_c) % m
 
@@ -31,10 +31,29 @@ def fermat_test(number, times = 5):
             return False
     return True
 
-def gcd(a, b):
-    while b != 0:
-        a, b = b, a % b
-    return a
+def miller_rabin_test(number, k):
+    s = 0
+    n = number
+    number = number - 1
+    while number % 2 == 0:
+        number = number // 2
+        s = s + 1
+    for i in range(k):
+        a = random.randrange(2, n-1)
+        x = pow(a, number, n)
+        if x == 1 or x == n - 1:
+            continue
+        flag = True
+        for r in range(s):
+            x = pow(x, 2, n)
+            if x == 1:
+                return False
+            if x == n - 1:
+                flag = False
+                break
+        if flag:
+            return False
+    return True
 
 def jacobi_symbol(a, p):
     a = a % p #Rule 2 (a/b) = (a mod b / b)
