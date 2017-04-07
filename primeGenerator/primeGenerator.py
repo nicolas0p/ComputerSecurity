@@ -1,7 +1,7 @@
 
 import time
 import random
-import fractions
+import math
 
 park_miller_n = 2147483647 #2^31 - 1
 park_miller_g = 48271
@@ -13,13 +13,22 @@ lcg_c = 1442695040888963407
 def linear_congruential_generator(seed, m):
     return (lcg_a * seed + lcg_c) % m
 
-def generate_and_verify(bits, generator, verifier, seed, precision = 10):
-    result = int(bin(seed)[:bits], 2)
+xorshift_a = 13
+xorshift_b = 17
+xorshift_c = 5
+def xorshift_generator(seed, m):
+    x = seed
+    x = x ^ (x << xorshift_a)
+    x = x ^ (x >> xorshift_a)
+    x = x ^ (x << xorshift_a)
+    return x & m-1 #it only keeps the bits-1 more significant bits
+
+def generate_and_verify(bits, generator, verifier, precision = 10):
     begin = time.time()
     m = pow(2, bits)
+    result = int(begin)#pow(7, bits, m) #generates a seed about the size of m
     while(not verifier(result, precision)):
         result = generator(result, m)
-        #result = int(bin(result)[:bits], 2)
 
     elapsed = (time.time() - begin)
     return result, elapsed
@@ -63,12 +72,12 @@ def jacobi_symbol(a, p):
             a = a // 2
             if p % 8 == 3 or p % 8 == 5: #Rule 8
                 result = -result
-	if a == 1:
-	    return result
-        if fractions.gcd(a, p) != 1: #not coprime
-	    return 0
-	if a % 4 == 3 and p % 4 == 3:
-	    result = -result
+        if a == 1:
+            return result
+        if math.gcd(a, p) != 1: #not coprime
+            return 0
+        if a % 4 == 3 and p % 4 == 3:
+            result = -result
         temp = a
         a = p
         p = temp
@@ -81,13 +90,12 @@ def solovay_strassen_test(number, k):
     for i in range(k):
         a = random.randrange(number)
         jacobi = jacobi_symbol(a, number)
-        if jacobi == 0 or pow(a, (number - 1) / 2 , number) != jacobi % number:
+        if jacobi == 0 or pow(a, (number - 1) // 2 , number) != jacobi % number:
             return False
     return True
 
 if __name__ == "__main__":
-    bits = input("Type in the amount of bits of the desired prime:")
-    seed = input("Type in the seed:")
-    number, time = generate_and_verify(bits, linear_congruential_generator, solovay_strassen_test, seed)
+    bits = int(input("Type in the amount of bits of the desired prime:"))
+    number, time = generate_and_verify(bits, xorshift_generator, solovay_strassen_test)
     print("Prime: " + str(number))
     print("Time elapsed(s): " + str(time))
