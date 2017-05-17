@@ -18,7 +18,6 @@ class primitiveRootTest(unittest.TestCase):
 
     def test_eulers_totient(self):
         first = primitiveRoot.phi(5)
-        #import pdb; pdb.set_trace()
         second = primitiveRoot.phi(12)
         third = primitiveRoot.phi(36)
         fourth = primitiveRoot.phi(99)
@@ -28,10 +27,11 @@ class primitiveRootTest(unittest.TestCase):
         self.assertEqual(third, 12)
         self.assertEqual(fourth, 60)
 
-    def find_primitive_roots(self):
+    def test_find_primitive_roots(self):
         first = primitiveRoot.find_primitive_roots(23)
 
         self.assertEqual(first, {5, 7, 10, 11, 14, 15, 17, 19, 20, 21})
+        self.assertEqual(len(first), primitiveRoot.phi(primitiveRoot.phi(23)))
 
     def test_find_primitive_roots_given_one(self):
         first = primitiveRoot.find_primitive_roots_given_one(23, 5)

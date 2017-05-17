@@ -23,12 +23,15 @@ def prime_factorization(n):
     return result
 
 """Euler's Totient function"""
-def phi(n):
+def phi_with_factors(n):
     primes = prime_factorization(n)
     result = n
     for prime in primes.items():
         result *= (1 - 1/prime[0])
-    return int(result)
+    return int(result), primes
+
+def phi(n):
+    return phi_with_factors(n)[0]
 
 def gcd(a,b):
     if b == 0:
@@ -49,8 +52,25 @@ def find_primitive_roots_given_one(n, root):
         roots.add(pow(root, i, n))
     return roots
 
+def _is_primitive_root(toTest, n, euler, primes_phi):
+    for prime in primes_phi.keys():
+        if pow(toTest, int(euler/prime), n) == 1:
+            return False
+    return True
+
+"""Finds the first primitive root modulo n
+@param euler phi(n)
+@param primes_phi integer factorization of phi(n)"""
+def find_first_primitive_root(n, euler, primes_phi):
+    for i in range(2, n):
+        if _is_primitive_root(i, n, euler, primes_phi):
+            return i
+
 def find_primitive_roots(n):
-    pass
+    euler = phi(n)
+    primes_phi = prime_factorization(euler)
+    first_root = find_first_primitive_root(n, euler, primes_phi)
+    return find_primitive_roots_given_one(n, first_root)
 
 if __name__ == "__main__":
     n = int(input("Type in the number for which you want to know the primitive roots:"))
