@@ -118,14 +118,14 @@ def solovay_strassen_test(number, k):
     return True
 
 if __name__ == "__main__":
-    #bits = int(input("Type in the amount of bits of the desired prime:"))
-    #import pdb; pdb.set_trace()
-    bits = [40, 56, 80, 128, 168, 224, 256, 512, 1024, 2048, 4096]
+    bits = int(input("Type in the amount of bits of the desired prime:"))
+    print("Prime = " + str(generate_and_verify(bits, xorshift_generator, solovay_strassen_test)[0]))
+    """bits = [40, 56, 80, 128, 168, 224, 256, 512, 1024, 2048, 4096]
     for length in bits:
         number, elapsed = generate_and_verify(length, xorshift_generator, solovay_strassen_test)
         print("Prime({}): ".format(length) + str(number))
         print("Time elapsed(s)({}): ".format(length) + str(elapsed))
-    """
+    """""""
     Used to measure each generators speed
     bits = int(input("Type in the amount of bits of the desired primes:"))
     #import pdb; pdb.set_trace()

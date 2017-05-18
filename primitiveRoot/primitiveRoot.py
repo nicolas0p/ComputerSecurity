@@ -26,8 +26,8 @@ def prime_factorization(n):
 def phi_with_factors(n):
     primes = prime_factorization(n)
     result = n
-    for prime in primes.items():
-        result *= (1 - 1/prime[0])
+    for prime in primes.keys():
+        result *= (1 - 1/prime)
     return int(result), primes
 
 def phi(n):
