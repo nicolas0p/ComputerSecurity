@@ -22,6 +22,20 @@ def prime_factorization(n):
         result[n] = 1 #prime number
     return result
 
+"""@returns a^-1 mod n"""
+def inverse(a, n):
+    t = 0; newt = 1
+    r = n; newr = a
+    while newr != 0:
+        quotient = r // newr
+        t, newt = newt, t - quotient * newt
+        r, newr = newr, r - quotient * newr
+    if r > 1:
+        return False #a is not invertible mod n
+    if t < 0:
+        t += n
+    return t
+
 """Euler's Totient function"""
 def phi_with_factors(n):
     primes = prime_factorization(n)
